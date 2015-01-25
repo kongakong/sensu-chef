@@ -1,35 +1,21 @@
-$install_chef = <<SCRIPT
-if ! [ -d "/opt/chef" ];
-then
-    # only needed for older version of ubuntu
-    # sed -i -e 's/archive.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
-    # sed -i -e 's/security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
-    apt-get update
-    apt-get dist-upgrade
-    apt-get install -y curl
-    curl -L https://www.opscode.com/chef/install.sh | bash
-fi
-SCRIPT
-
 Vagrant.configure("2") do |config|
   config.berkshelf.enabled = true
+  config.omnibus.chef_version = :latest
 
   config.vm.box = "opscode-ubuntu-14.04"
   config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
- config.vm.provider :virtualbox do |vb|
+  config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--name", "sensu"]
     vb.customize ["modifyvm", :id, "--memory", "1024"]
   end
 
   config.vm.network :forwarded_port, guest: 8080, host: 5678
 
-  config.vm.provision :shell, :inline => $install_chef
-
-  config.vm.provision :chef_solo do |chef|
-    chef.cookbooks_path = "cookbooks"
+  config.vm.provision :chef_zero do |chef|
+    # chef.cookbooks_path = "cookbooks"
     chef.data_bags_path = "data_bags"
-    chef.add_recipe "monitor::master"
-    chef.add_recipe "monitor::redis"
-    chef.add_recipe "monitor::rabbitmq"
+    # chef.add_recipe "monitor::master"
+    chef.add_recipe "sensu::redis"
+    chef.add_recipe "sensu::rabbitmq"
   end
 end

@@ -2,14 +2,5 @@ source 'https://supermarket.getchef.com'
 
 cookbook "apt"
 cookbook "yum"
-cookbook "rabbitmq"
+cookbook "sensu"
 
-cookbook "redis",
-  :git => "https://github.com/miah/chef-redis.git"
-
-cookbook "sensu",
-#  :git => "https://github.com/sensu/sensu-chef.git"
-  :path => "../"
-
-cookbook "monitor",
-  :git => "https://github.com/portertech/chef-monitor.git"
